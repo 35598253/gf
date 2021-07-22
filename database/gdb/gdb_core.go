@@ -93,7 +93,13 @@ func (c *Core) GetCtxTimeout(timeoutType int, ctx context.Context) (context.Cont
 	}
 	return ctx, func() {}
 }
-
+// Recache pings the master node to check authentication or keeps the connection alive.
+func (c *Core) Recache(table string) error{
+	if _,err :=internalCache.Remove(fmt.Sprintf(`mysql_table_fields_%s_@group:%s`, table, c.GetGroup()));err != nil {
+		return err
+	} 
+	return nil
+}
 // Master creates and returns a connection from master node if master-slave configured.
 // It returns the default connection if master-slave not configured.
 func (c *Core) Master(schema ...string) (*sql.DB, error) {
